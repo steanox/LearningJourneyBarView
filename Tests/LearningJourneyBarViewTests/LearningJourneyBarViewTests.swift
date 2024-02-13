@@ -1,5 +1,6 @@
 import XCTest
-@testable import LearningJourneyBarView
+import LearningJourneyBarView
+
 
 final class LearningJourneyBarViewTests: XCTestCase {
     func testExample() throws {
