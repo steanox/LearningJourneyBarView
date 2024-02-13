@@ -28,6 +28,19 @@ struct LearningJourneyBarView: View {
     
     var onProgressBarClicked: ( () -> (Void) )?
     
+    init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundColor: Color, backgroundLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, hoverColor: Color, onProgressBarClicked: ( () -> Void)? = nil) {
+        self.totalColumn = totalColumn
+        self.currentProgress = currentProgress
+        self.targetObjectiveAt = targetObjectiveAt
+        self.backgroundColor = backgroundColor
+        self.backgroundLineColor = backgroundLineColor
+        self.backgroundLineWidth = backgroundLineWidth
+        self.barColor = barColor
+        self.targetColor = targetColor
+        self.hoverColor = hoverColor
+        self.onProgressBarClicked = onProgressBarClicked
+    }
+    
     var body: some View {
         VStack{
             if targetObjectiveAt > totalColumn{
