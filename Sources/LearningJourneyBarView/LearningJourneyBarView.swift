@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 @available(iOS 14.0, *)
-struct LearningJourneyBarView: View {
+public struct LearningJourneyBarView: View {
     @State private var hoverLocation: CGPoint = .zero
     @State private var isHovering = false
     
@@ -28,7 +28,7 @@ struct LearningJourneyBarView: View {
     
     var onProgressBarClicked: ( () -> (Void) )?
     
-    init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundColor: Color, backgroundLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, hoverColor: Color, onProgressBarClicked: ( () -> Void)? = nil) {
+    public init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundColor: Color, backgroundLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, hoverColor: Color, onProgressBarClicked: ( () -> Void)? = nil) {
         self.totalColumn = totalColumn
         self.currentProgress = currentProgress
         self.targetObjectiveAt = targetObjectiveAt
@@ -41,7 +41,7 @@ struct LearningJourneyBarView: View {
         self.onProgressBarClicked = onProgressBarClicked
     }
     
-    var body: some View {
+    public var body: some View {
         VStack{
             if targetObjectiveAt > totalColumn{
                 Text("Target objective should not exceed totalLO")
