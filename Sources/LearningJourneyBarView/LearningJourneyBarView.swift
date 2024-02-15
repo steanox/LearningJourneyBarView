@@ -57,26 +57,35 @@ public struct LearningJourneyBarView: View {
                     let overlapBar = rowSize / 4
                     
                     Path{ path in
-                        for index in 0...totalColumn{
+                        for index in 0...totalColumn-1{
                             path.move(to:
-                                        CGPointMake(0 + (CGFloat(index) * rowSize),0))
+                                        CGPointMake((CGFloat(index) * rowSize),0))
+                            path.addLine(to: 
+                                            CGPointMake(
+                                CGFloat(index) * rowSize + backgroundLineWidth,
+                                0))
                             path.addLine(to:
-                                            CGPointMake(0 + (CGFloat(index) * rowSize),height))
+                                            CGPointMake((CGFloat(index) * rowSize) + backgroundLineWidth,height))
+                            path.addLine(to:
+                                        CGPointMake((CGFloat(index) * rowSize),height))
                             
                         }
                     }
-                    .stroke(backgroundLineColor,lineWidth: backgroundLineWidth)
+                    .fill(backgroundLineColor)
                     
                     //Draw Target Color
                     Path { path in
-                        path.move(to: CGPoint(
-                            x: rowSize * CGFloat(targetObjectiveAt),
-                            y: 0))
-                        path.addLine(to: CGPoint(
-                            x: rowSize * CGFloat(targetObjectiveAt),
-                            y: height))
+                        path.move(to:CGPointMake(rowSize * CGFloat(targetObjectiveAt),0))
+                        path.addLine(to:
+                                        CGPointMake(
+                                            rowSize * CGFloat(targetObjectiveAt) + backgroundLineWidth,
+                            0))
+                        path.addLine(to:
+                                        CGPointMake(rowSize * CGFloat(targetObjectiveAt) + backgroundLineWidth,height))
+                        path.addLine(to:
+                                    CGPointMake(rowSize * CGFloat(targetObjectiveAt),height))
                     }
-                    .stroke(targetColor,lineWidth: backgroundLineWidth)
+                    .fill(targetColor)
                     
                     //Background Bar
                     Rectangle()
@@ -140,11 +149,12 @@ public struct LearningJourneyBarView: View {
             targetObjectiveAt: 3, 
             backgroundColor: .gray,
             backgroundLineColor: .blue,
-            backgroundLineWidth: 2,
+            backgroundLineWidth: 10,
             barColor: .cyan,
             targetColor: .green,
             backBarColor: .red,
             onProgressBarClicked: nil)
+        
     } else {
         Text("Wrong")
     }
