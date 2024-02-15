@@ -9,7 +9,7 @@
 import Foundation
 import SwiftUI
 
-@available(iOS 14.0, *)
+@available(iOS 16.0, *)
 public struct LearningJourneyBarView: View {
     @State private var hoverLocation: CGPoint = .zero
     @State private var isHovering = false
@@ -24,11 +24,11 @@ public struct LearningJourneyBarView: View {
     
     var barColor: Color
     var targetColor: Color
-    var hoverColor: Color
+    var backBarColor: Color
     
     var onProgressBarClicked: ( () -> (Void) )?
     
-    public init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundColor: Color, backgroundLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, hoverColor: Color, onProgressBarClicked: ( () -> Void)? = nil) {
+    public init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundColor: Color, backgroundLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, backBarColor: Color, onProgressBarClicked: ( () -> Void)? = nil) {
         self.totalColumn = totalColumn
         self.currentProgress = currentProgress
         self.targetObjectiveAt = targetObjectiveAt
@@ -37,22 +37,24 @@ public struct LearningJourneyBarView: View {
         self.backgroundLineWidth = backgroundLineWidth
         self.barColor = barColor
         self.targetColor = targetColor
-        self.hoverColor = hoverColor
+        self.backBarColor = backBarColor
         self.onProgressBarClicked = onProgressBarClicked
+        
     }
     
+    @State var widthGeo:CGFloat = 0
     public var body: some View {
-        VStack{
+        ZStack{
             if targetObjectiveAt > totalColumn{
                 Text("Target objective should not exceed totalLO")
             }else{
+
                 GeometryReader { geometry in
                     let width = geometry.size.width
                     let height = geometry.size.height
                     let rowSize = width / CGFloat(totalColumn)
                     let barHeight = height / 3
-                    let barCenter = height / 2
-                    let overlapBar = rowSize / 6
+                    let overlapBar = rowSize / 4
                     
                     Path{ path in
                         for index in 0...totalColumn{
@@ -63,71 +65,7 @@ public struct LearningJourneyBarView: View {
                             
                         }
                     }
-                    .stroke(.black,lineWidth: backgroundLineWidth)
-                    
-                    // Draw Background line
-                    Path{ path in
-                        
-                        path.move(to: CGPointMake(0, barCenter - (barHeight / 2)))
-                        path.addLine(to: CGPointMake(rowSize * CGFloat(currentProgress+1) + overlapBar , barCenter - (barHeight / 2)))
-                        path.addLine(to: CGPointMake(rowSize * CGFloat(currentProgress+1) + overlapBar , barCenter + (barHeight / 2)))
-                        path.addLine(to: CGPointMake(0, barCenter + (barHeight / 2)))
-                    }
-                    .fill(isHovering ? barColor : hoverColor)
-                    .onTapGesture {
-                        print("asd")
-                        if let onProgressBarClicked{
-                            onProgressBarClicked()
-                        }
-                    }
-                    .onHover(perform: { hoverStatus in
-                        isHovering = hoverStatus
-                    })
-                    
-                    //Draw background Circle
-                    Path{ path in
-                        path.addArc(center:
-                                        CGPoint(
-                                            x: rowSize * CGFloat(currentProgress+1) + overlapBar,
-                                            y: barCenter),
-                                    radius: barHeight / 2,
-                                    startAngle: .degrees(0),
-                                    endAngle: .degrees(360), clockwise: true)
-                    }
-                    .fill(isHovering ? barColor : hoverColor)
-                    .onTapGesture {
-                        print("asd")
-                        if let onProgressBarClicked{
-                            onProgressBarClicked()
-                        }
-                    }
-                    .onHover(perform: { hoverStatus in
-                        isHovering = hoverStatus
-                    })
-
-                    
-                    
-                    // Draw the line
-                    Path{ path in
-                        
-                        path.move(to: CGPointMake(0, barCenter - (barHeight / 2)))
-                        path.addLine(to: CGPointMake(rowSize * CGFloat(currentProgress) + overlapBar , barCenter - (barHeight / 2)))
-                        path.addLine(to: CGPointMake(rowSize * CGFloat(currentProgress) + overlapBar , barCenter + (barHeight / 2)))
-                        path.addLine(to: CGPointMake(0, barCenter + (barHeight / 2)))
-                    }
-                    .fill(barColor)
-                    
-                    Path{ path in
-                        path.addArc(center:
-                                        CGPoint(
-                                            x: rowSize * CGFloat(currentProgress) + overlapBar,
-                                            y: barCenter),
-                                    radius: barHeight / 2,
-                                    startAngle: .degrees(0),
-                                    endAngle: .degrees(360), clockwise: true)
-                    }
-                    .fill(barColor)
-                    
+                    .stroke(backgroundLineColor,lineWidth: backgroundLineWidth)
                     
                     //Draw Target Color
                     Path { path in
@@ -138,11 +76,76 @@ public struct LearningJourneyBarView: View {
                             x: rowSize * CGFloat(targetObjectiveAt),
                             y: height))
                     }
-                    .stroke(barColor,lineWidth: backgroundLineWidth)
+                    .stroke(targetColor,lineWidth: backgroundLineWidth)
                     
+                    //Background Bar
+                    Rectangle()
+                        .foregroundColor(
+                            isHovering ? barColor:                            backBarColor)
+                        
+                        .frame(
+                            width: rowSize * CGFloat(currentProgress+1) + overlapBar ,
+                            height: barHeight)
+                        
+                        .clipShape(
+                            .rect(
+                                topLeadingRadius: 0,
+                                bottomLeadingRadius: 0,
+                                bottomTrailingRadius: barHeight / 2,
+                                topTrailingRadius: barHeight / 2
+                            )
+                        )
+                        .offset(y: height / 2 - (barHeight / 2))
+                        .onHover(perform: { hovering in
+                            isHovering = hovering
+                        })
+                        .onTapGesture {
+                            if let onProgressBarClicked{
+                                onProgressBarClicked()
+                            }
+                        }
+                        
+                        
+                    //draw the bar
+                    Rectangle()
+                        .frame(
+                            width:
+                                rowSize * CGFloat(currentProgress) + overlapBar,
+                            height: barHeight)
+                        .foregroundColor(barColor)
+                        .clipShape(
+                            .rect(
+                                topLeadingRadius: 0,
+                                bottomLeadingRadius: 0,
+                                bottomTrailingRadius: barHeight / 2,
+                                topTrailingRadius: barHeight / 2
+                            )
+                        )
+                        .offset(y: height / 2 - (barHeight / 2))
+
+                        
                 }
-                .background(self.backgroundColor)
+                .background(backgroundColor)
             }
         }
+    }
+}
+
+
+#Preview {
+    if #available(macCatalyst 16.0, *) {
+        LearningJourneyBarView(
+            totalColumn: 4,
+            currentProgress: 2,
+            targetObjectiveAt: 3, 
+            backgroundColor: .gray,
+            backgroundLineColor: .blue,
+            backgroundLineWidth: 2,
+            barColor: .cyan,
+            targetColor: .green,
+            backBarColor: .red,
+            onProgressBarClicked: nil)
+    } else {
+        Text("Wrong")
     }
 }
