@@ -88,39 +88,41 @@ public struct LearningJourneyBarView: View {
                     .fill(targetColor)
                     
                     //Background Bar
-                    Rectangle()
-                        .foregroundColor(
-                            isHovering ? barColor:                            backBarColor)
-                        
-                        .frame(
-                            width: rowSize * CGFloat(currentProgress+1) + overlapBar ,
-                            height: barHeight)
-                        
-                        .clipShape(
-                            .rect(
-                                topLeadingRadius: 0,
-                                bottomLeadingRadius: 0,
-                                bottomTrailingRadius: barHeight / 2,
-                                topTrailingRadius: barHeight / 2
+                    if currentProgress != totalColumn{
+                        Rectangle()
+                            .foregroundColor(
+                                isHovering ? barColor:                            backBarColor)
+                            
+                            .frame(
+                                width: rowSize * CGFloat(currentProgress+1) + overlapBar ,
+                                height: barHeight)
+                            
+                            .clipShape(
+                                .rect(
+                                    topLeadingRadius: 0,
+                                    bottomLeadingRadius: 0,
+                                    bottomTrailingRadius: barHeight / 2,
+                                    topTrailingRadius: barHeight / 2
+                                )
                             )
-                        )
-                        .offset(y: height / 2 - (barHeight / 2))
-                        .onHover(perform: { hovering in
-                            isHovering = hovering
-                        })
-                        .onTapGesture {
-                            if let onProgressBarClicked{
-                                onProgressBarClicked()
+                            .onHover(perform: { hovering in
+                                isHovering = hovering
+                            })
+                            .onTapGesture {
+                                if let onProgressBarClicked{
+                                    onProgressBarClicked()
+                                }
                             }
-                        }
-                        
-                        
+                            .offset(y: height / 2 - (barHeight / 2))
+                    }
+                    
                     //draw the bar
                     Rectangle()
                         .frame(
                             width:
                                 rowSize * CGFloat(currentProgress) + overlapBar,
                             height: barHeight)
+                    
                         .foregroundColor(barColor)
                         .clipShape(
                             .rect(
@@ -130,7 +132,17 @@ public struct LearningJourneyBarView: View {
                                 topTrailingRadius: barHeight / 2
                             )
                         )
+                        .onHover(perform: { hovering in
+                            isHovering = hovering
+                        })
+                        .onTapGesture {
+                            if let onProgressBarClicked{
+                                onProgressBarClicked()
+                            }
+                        }
                         .offset(y: height / 2 - (barHeight / 2))
+                        
+
 
                         
                 }
@@ -143,17 +155,22 @@ public struct LearningJourneyBarView: View {
 
 #Preview {
     if #available(macCatalyst 16.0, *) {
-        LearningJourneyBarView(
-            totalColumn: 4,
-            currentProgress: 2,
-            targetObjectiveAt: 3, 
-            backgroundColor: .gray,
-            backgroundLineColor: .blue,
-            backgroundLineWidth: 10,
-            barColor: .cyan,
-            targetColor: .green,
-            backBarColor: .red,
-            onProgressBarClicked: nil)
+        ZStack{
+            Rectangle()
+            LearningJourneyBarView(
+                totalColumn: 4,
+                currentProgress: 4,
+                targetObjectiveAt: 2,
+                backgroundColor: .gray,
+                backgroundLineColor: .blue,
+                backgroundLineWidth: 10,
+                barColor: .cyan,
+                targetColor: .green,
+                backBarColor: .red,
+                onProgressBarClicked: nil)
+            .frame(width: 300)
+        }
+        
         
     } else {
         Text("Wrong")
