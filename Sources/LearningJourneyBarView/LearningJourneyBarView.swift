@@ -8,11 +8,25 @@
 
 import Foundation
 import SwiftUI
+import AppKit
 
 @available(iOS 16.0, *)
 public struct LearningJourneyBarView: View {
-    @State private var hoverLocation: CGPoint = .zero
-    @State private var isHovering = false
+    
+    //For the Hover Bar
+    @State private var isMinBarHovering = false
+    @State private var isPlusBarHovering = false
+    @State private var minBarWidth: CGFloat = 0
+    @State private var midBarWidth: CGFloat = 0
+    @State private var plusBarWidth: CGFloat = 0
+    @State private var selectedIndex: Int? = nil
+    @State private var isBarClickable = false
+    
+    //For View
+    @State var rowSize: CGFloat = 0
+    @State var overlapBar: CGFloat = 0
+    @State var barHeight: CGFloat = 0
+    @State var height: CGFloat = 0
     
     var totalColumn: Int
     var currentProgress: Int
@@ -24,11 +38,13 @@ public struct LearningJourneyBarView: View {
     
     var barColor: Color
     var targetColor: Color
-    var backBarColor: Color
+    var backPlusBarHoverColor: Color
+    var frontMinBarHoverColor: Color
     
-    var onProgressBarClicked: ( () -> (Void) )?
+    var onBarClicked: ( (Int) -> (Void) )?
     
-    public init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundColor: Color, backgroundLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, backBarColor: Color, onProgressBarClicked: ( () -> Void)? = nil) {
+    
+    public init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundColor: Color, backgroundLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, backPlusBarHoverColor: Color,frontMinBarHoverColor: Color, onBarClicked: ( (Int) -> Void)? = nil) {
         self.totalColumn = totalColumn
         self.currentProgress = currentProgress
         self.targetObjectiveAt = targetObjectiveAt
@@ -37,8 +53,9 @@ public struct LearningJourneyBarView: View {
         self.backgroundLineWidth = backgroundLineWidth
         self.barColor = barColor
         self.targetColor = targetColor
-        self.backBarColor = backBarColor
-        self.onProgressBarClicked = onProgressBarClicked
+        self.backPlusBarHoverColor = backPlusBarHoverColor
+        self.frontMinBarHoverColor = frontMinBarHoverColor
+        self.onBarClicked = onBarClicked
         
     }
     
@@ -48,11 +65,11 @@ public struct LearningJourneyBarView: View {
             if targetObjectiveAt > totalColumn{
                 Text("Target objective should not exceed totalLO")
             }else{
-
                 GeometryReader { geometry in
                     let width = geometry.size.width
                     let height = geometry.size.height
                     let rowSize = width / CGFloat(totalColumn)
+                    
                     let barHeight = height / 3
                     let overlapBar = rowSize / 4
                     
@@ -72,6 +89,14 @@ public struct LearningJourneyBarView: View {
                         }
                     }
                     .fill(backgroundLineColor)
+                    .onAppear{
+                        self.plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                        self.height = height
+                        self.rowSize = rowSize
+                        self.barHeight = barHeight
+                        self.overlapBar = overlapBar
+                    }
+                    
                     
                     //Draw Target Color
                     Path { path in
@@ -91,10 +116,9 @@ public struct LearningJourneyBarView: View {
                     if currentProgress != totalColumn{
                         Rectangle()
                             .foregroundColor(
-                                isHovering ? barColor:                            backBarColor)
-                            
+                                isPlusBarHovering ? barColor:                            backPlusBarHoverColor)
                             .frame(
-                                width: rowSize * CGFloat(currentProgress+1) + overlapBar ,
+                                width: plusBarWidth ,
                                 height: barHeight)
                             
                             .clipShape(
@@ -105,25 +129,22 @@ public struct LearningJourneyBarView: View {
                                     topTrailingRadius: barHeight / 2
                                 )
                             )
-                            .onHover(perform: { hovering in
-                                isHovering = hovering
-                            })
-                            .onTapGesture {
-                                if let onProgressBarClicked{
-                                    onProgressBarClicked()
-                                }
-                            }
                             .offset(y: height / 2 - (barHeight / 2))
+                            
                     }
                     
                     //draw the bar
+                    
                     Rectangle()
                         .frame(
                             width:
-                                rowSize * CGFloat(currentProgress) + overlapBar,
+                                midBarWidth,
                             height: barHeight)
                     
                         .foregroundColor(barColor)
+                        .onAppear(perform: {
+                            midBarWidth = rowSize * CGFloat(currentProgress) + overlapBar
+                        })
                         .clipShape(
                             .rect(
                                 topLeadingRadius: 0,
@@ -132,21 +153,80 @@ public struct LearningJourneyBarView: View {
                                 topTrailingRadius: barHeight / 2
                             )
                         )
-                        .onHover(perform: { hovering in
-                            isHovering = hovering
+                        .overlay(alignment: .leading, content: {
+                            Rectangle()
+                                .frame(
+                                    width:
+                                        minBarWidth,
+                                    height: barHeight)
+                                .foregroundColor(isMinBarHovering ? .green : .black)
+                                .clipShape(
+                                    .rect(
+                                        topLeadingRadius: 0,
+                                        bottomLeadingRadius: 0,
+                                        bottomTrailingRadius: barHeight / 2,
+                                        topTrailingRadius: barHeight / 2
+                                    )
+                                )
+                                
+                                
                         })
-                        .onTapGesture {
-                            if let onProgressBarClicked{
-                                onProgressBarClicked()
-                            }
-                        }
                         .offset(y: height / 2 - (barHeight / 2))
-                        
-
-
-                        
                 }
                 .background(backgroundColor)
+                .onContinuousHover(coordinateSpace: .local) { phase in
+                    switch phase{
+                    case .active(let point):
+                        let currentXIndex = Int(point.x / rowSize) + 1
+                        
+                        let topBarPosition = height / 2 - (barHeight / 2)
+                        let bottomBarPosition = height / 2 + (barHeight / 2)
+                        
+                        midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
+                        minBarWidth = 0
+                        plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                        self.isBarClickable = false
+                        
+                        guard (
+                            point.y > topBarPosition && point.y < bottomBarPosition) else { return }
+                        
+                        self.selectedIndex = currentXIndex
+                        self.isBarClickable = true
+                        
+                        if currentXIndex == currentProgress + 1 {
+                            midBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                            minBarWidth = 0
+                            plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                            
+                        }else
+                        if currentXIndex < currentProgress{
+                            midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
+                            minBarWidth = CGFloat(currentXIndex) * rowSize + overlapBar
+                            plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                        }else
+                        if currentXIndex > currentProgress + 1{
+                            midBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                            minBarWidth = 0
+                            plusBarWidth = CGFloat(currentXIndex) * rowSize + overlapBar
+                        }else{
+                            midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
+                            minBarWidth = 0
+                            plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                            self.isBarClickable = false
+                        }
+                    case .ended:
+                        midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
+                        minBarWidth = 0
+                        plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                        self.isBarClickable = false
+                    }
+                }
+                .onTapGesture {
+                    if isBarClickable, let onBarClicked, let selectedIndex{
+                        onBarClicked(selectedIndex)
+                    }
+                }
+                
             }
         }
     }
@@ -158,16 +238,19 @@ public struct LearningJourneyBarView: View {
         ZStack{
             Rectangle()
             LearningJourneyBarView(
-                totalColumn: 4,
-                currentProgress: 4,
+                totalColumn: 6,
+                currentProgress: 1,
                 targetObjectiveAt: 2,
                 backgroundColor: .gray,
                 backgroundLineColor: .blue,
                 backgroundLineWidth: 10,
                 barColor: .cyan,
                 targetColor: .green,
-                backBarColor: .red,
-                onProgressBarClicked: nil)
+                backPlusBarHoverColor: .red,
+                frontMinBarHoverColor: .green,
+                onBarClicked: { index in
+                    print("Clicked \(index)")
+                })
             .frame(width: 300)
         }
         
