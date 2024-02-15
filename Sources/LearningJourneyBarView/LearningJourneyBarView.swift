@@ -57,7 +57,7 @@ public struct LearningJourneyBarView: View {
                     let overlapBar = rowSize / 4
                     
                     Path{ path in
-                        for index in 0...totalColumn-1{
+                        for index in 0...totalColumn{
                             path.move(to:
                                         CGPointMake((CGFloat(index) * rowSize),0))
                             path.addLine(to: 
