@@ -32,7 +32,6 @@ public struct LearningJourneyBarView: View {
     var currentProgress: Int
     var targetObjectiveAt: Int
     
-    var backgroundColor: Color
     var backgroundLineColor: Color
     var backgroundLineWidth: CGFloat = 1
     
@@ -44,11 +43,10 @@ public struct LearningJourneyBarView: View {
     var onBarClicked: ( (Int) -> (Void) )?
     
     
-    public init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundColor: Color, backgroundLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, backPlusBarHoverColor: Color,frontMinBarHoverColor: Color, onBarClicked: ( (Int) -> Void)? = nil) {
+    public init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, backPlusBarHoverColor: Color,frontMinBarHoverColor: Color, onBarClicked: ( (Int) -> Void)? = nil) {
         self.totalColumn = totalColumn
         self.currentProgress = currentProgress
         self.targetObjectiveAt = targetObjectiveAt
-        self.backgroundColor = backgroundColor
         self.backgroundLineColor = backgroundLineColor
         self.backgroundLineWidth = backgroundLineWidth
         self.barColor = barColor
@@ -66,8 +64,9 @@ public struct LearningJourneyBarView: View {
                 Text("Target objective should not exceed totalLO")
             }else{
                 GeometryReader { geometry in
+                    
                     let width = geometry.size.width
-                    let height = geometry.size.height
+                    let height = geometry.size.height + geometry.safeAreaInsets.top
                     let rowSize = width / CGFloat(totalColumn)
                     
                     let barHeight = height / 3
@@ -172,7 +171,6 @@ public struct LearningJourneyBarView: View {
                         })
                         .offset(y: height / 2 - (barHeight / 2))
                 }
-                .background(backgroundColor)
                 .onContinuousHover(coordinateSpace: .local) { phase in
                     switch phase{
                     case .active(let point):
@@ -220,7 +218,6 @@ public struct LearningJourneyBarView: View {
                         onBarClicked(selectedIndex)
                     }
                 }
-                
             }
         }
     }
@@ -229,13 +226,11 @@ public struct LearningJourneyBarView: View {
 
 #Preview {
     if #available(macCatalyst 16.0, *) {
-        ZStack{
-            Rectangle()
+        VStack{
             LearningJourneyBarView(
                 totalColumn: 6,
                 currentProgress: 3,
                 targetObjectiveAt: 2,
-                backgroundColor: .gray,
                 backgroundLineColor: .blue,
                 backgroundLineWidth: 10,
                 barColor: .cyan,
@@ -246,6 +241,22 @@ public struct LearningJourneyBarView: View {
                     print("Clicked \(index)")
                 })
             .frame(width: 300)
+            LearningJourneyBarView(
+                totalColumn: 6,
+                currentProgress: 3,
+                targetObjectiveAt: 2,
+                backgroundLineColor: .blue,
+                backgroundLineWidth: 10,
+                barColor: .cyan,
+                targetColor: .green,
+                backPlusBarHoverColor: .red,
+                frontMinBarHoverColor: .green,
+                onBarClicked: { index in
+                    print("Clicked \(index)")
+                })
+            .frame(width: 300)
+            
+            
         }
         
         
