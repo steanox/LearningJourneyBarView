@@ -90,7 +90,7 @@ public struct LearningJourneyBarView: View {
                     }
                     .fill(backgroundLineColor)
                     .onAppear{
-                        self.plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                        self.plusBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                         self.height = height
                         self.rowSize = rowSize
                         self.barHeight = barHeight
@@ -130,7 +130,6 @@ public struct LearningJourneyBarView: View {
                                 )
                             )
                             .offset(y: height / 2 - (barHeight / 2))
-                            
                     }
                     
                     //draw the bar
@@ -184,7 +183,7 @@ public struct LearningJourneyBarView: View {
                         
                         midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                         minBarWidth = 0
-                        plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                        plusBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                         self.isBarClickable = false
                         
                         guard (
@@ -193,31 +192,26 @@ public struct LearningJourneyBarView: View {
                         self.selectedIndex = currentXIndex
                         self.isBarClickable = true
                         
-                        if currentXIndex == currentProgress + 1 {
-                            midBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
-                            minBarWidth = 0
-                            plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
-                            
-                        }else
+                        
                         if currentXIndex < currentProgress{
                             midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                             minBarWidth = CGFloat(currentXIndex) * rowSize + overlapBar
-                            plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                            plusBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                         }else
-                        if currentXIndex > currentProgress + 1{
-                            midBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                        if currentXIndex > currentProgress{
+                            midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                             minBarWidth = 0
                             plusBarWidth = CGFloat(currentXIndex) * rowSize + overlapBar
                         }else{
                             midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                             minBarWidth = 0
-                            plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                            plusBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                             self.isBarClickable = false
                         }
                     case .ended:
                         midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                         minBarWidth = 0
-                        plusBarWidth = CGFloat(currentProgress + 1) * rowSize + overlapBar
+                        plusBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                         self.isBarClickable = false
                     }
                 }
@@ -239,7 +233,7 @@ public struct LearningJourneyBarView: View {
             Rectangle()
             LearningJourneyBarView(
                 totalColumn: 6,
-                currentProgress: 1,
+                currentProgress: 3,
                 targetObjectiveAt: 2,
                 backgroundColor: .gray,
                 backgroundLineColor: .blue,
