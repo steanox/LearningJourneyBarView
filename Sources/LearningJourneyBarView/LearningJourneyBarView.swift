@@ -33,6 +33,7 @@ public struct LearningJourneyBarView: View {
     var targetObjectiveAt: Int
     
     var backgroundLineColor: Color
+    var backgroundMiddleLineColor: Color
     var backgroundLineWidth: CGFloat = 1
     
     var barColor: Color
@@ -43,11 +44,12 @@ public struct LearningJourneyBarView: View {
     var onBarClicked: ( (Int) -> (Void) )?
     
     
-    public init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, backPlusBarHoverColor: Color,frontMinBarHoverColor: Color, onBarClicked: ( (Int) -> Void)? = nil) {
+    public init(totalColumn: Int, currentProgress: Int, targetObjectiveAt: Int, backgroundLineColor: Color,backgroundMiddleLineColor: Color, backgroundLineWidth: CGFloat, barColor: Color, targetColor: Color, backPlusBarHoverColor: Color,frontMinBarHoverColor: Color, onBarClicked: ( (Int) -> Void)? = nil) {
         self.totalColumn = totalColumn
         self.currentProgress = currentProgress
         self.targetObjectiveAt = targetObjectiveAt
         self.backgroundLineColor = backgroundLineColor
+        self.backgroundMiddleLineColor = backgroundMiddleLineColor
         self.backgroundLineWidth = backgroundLineWidth
         self.barColor = barColor
         self.targetColor = targetColor
@@ -110,6 +112,10 @@ public struct LearningJourneyBarView: View {
                                     CGPointMake(rowSize * CGFloat(targetObjectiveAt),height))
                     }
                     .fill(targetColor)
+                    
+                    Rectangle()
+                        .frame(height: backgroundLineWidth)
+                        .offset(y: height / 2 - (backgroundLineWidth / 2))
                     
                     //Background Bar
                     if currentProgress != totalColumn{
@@ -232,6 +238,7 @@ public struct LearningJourneyBarView: View {
                 currentProgress: 3,
                 targetObjectiveAt: 2,
                 backgroundLineColor: .blue,
+                backgroundMiddleLineColor: .red,
                 backgroundLineWidth: 10,
                 barColor: .cyan,
                 targetColor: .green,
@@ -243,9 +250,10 @@ public struct LearningJourneyBarView: View {
             .frame(width: 300)
             LearningJourneyBarView(
                 totalColumn: 6,
-                currentProgress: 3,
+                currentProgress: 0,
                 targetObjectiveAt: 2,
                 backgroundLineColor: .blue,
+                backgroundMiddleLineColor: .red,
                 backgroundLineWidth: 10,
                 barColor: .cyan,
                 targetColor: .green,
