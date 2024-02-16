@@ -114,7 +114,7 @@ public struct LearningJourneyBarView: View {
                     .fill(targetColor)
                     
                     Rectangle()
-                        .frame(height: backgroundLineWidth)
+                        .frame(width: width + overlapBar + backgroundLineWidth,height: backgroundLineWidth)
                         .offset(y: height / 2 - (backgroundLineWidth / 2))
                     
                     //Background Bar
@@ -262,7 +262,7 @@ public struct LearningJourneyBarView: View {
                 onBarClicked: { index in
                     print("Clicked \(index)")
                 })
-            .frame(width: 300)
+            .frame(width: 200)
             
             
         }
