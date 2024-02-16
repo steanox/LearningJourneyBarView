@@ -114,7 +114,7 @@ public struct LearningJourneyBarView: View {
                     .fill(targetColor)
                     
                     Rectangle()
-                        .frame(width: width + overlapBar + backgroundLineWidth,height: backgroundLineWidth)
+                        .frame(width: width + overlapBar + backgroundLineWidth * 2,height: backgroundLineWidth)
                         .offset(y: height / 2 - (backgroundLineWidth / 2))
                     
                     //Background Bar
@@ -180,6 +180,7 @@ public struct LearningJourneyBarView: View {
                 .onContinuousHover(coordinateSpace: .local) { phase in
                     switch phase{
                     case .active(let point):
+                        guard rowSize != 0 else { return }
                         let currentXIndex = Int(point.x / rowSize) + 1
                         
                         let topBarPosition = height / 2 - (barHeight / 2)
