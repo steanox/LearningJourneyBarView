@@ -192,7 +192,9 @@ public struct LearningJourneyBarView: View {
                         self.isBarClickable = false
                         
                         guard (
-                            point.y > topBarPosition && point.y < bottomBarPosition) else { return }
+                            point.y > topBarPosition &&
+                            point.y < bottomBarPosition &&
+                            point.x < rowSize * CGFloat((totalColumn))) else { return }
                         
                         self.selectedIndex = currentXIndex
                         self.isBarClickable = true
@@ -250,7 +252,7 @@ public struct LearningJourneyBarView: View {
                 })
             .frame(width: 300)
             LearningJourneyBarView(
-                totalColumn: 6,
+                totalColumn: 4,
                 currentProgress: 0,
                 targetObjectiveAt: 2,
                 backgroundLineColor: .blue,
