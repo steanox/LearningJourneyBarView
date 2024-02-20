@@ -163,7 +163,7 @@ public struct LearningJourneyBarView: View {
                                     width:
                                         minBarWidth,
                                     height: barHeight)
-                                .foregroundColor(isMinBarHovering ? .green : .black)
+                                .foregroundColor(isMinBarHovering ? barColor : frontMinBarHoverColor)
                                 .clipShape(
                                     .rect(
                                         topLeadingRadius: 0,
@@ -181,7 +181,9 @@ public struct LearningJourneyBarView: View {
                     switch phase{
                     case .active(let point):
                         guard rowSize != 0 else { return }
-                        let currentXIndex = Int(point.x / rowSize) + 1
+                        let currentXIndex = 
+                        (point.x <= backgroundLineWidth) ? 0 : Int(point.x / (rowSize) + 1 )
+                        
                         
                         let topBarPosition = height / 2 - (barHeight / 2)
                         let bottomBarPosition = height / 2 + (barHeight / 2)
@@ -201,6 +203,7 @@ public struct LearningJourneyBarView: View {
                         
                         
                         if currentXIndex < currentProgress{
+                            
                             midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                             minBarWidth = CGFloat(currentXIndex) * rowSize + overlapBar
                             plusBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
@@ -250,7 +253,7 @@ public struct LearningJourneyBarView: View {
                 onBarClicked: { index in
                     print("Clicked \(index)")
                 })
-            .frame(width: 300)
+            .frame(width: 500)
             LearningJourneyBarView(
                 totalColumn: 4,
                 currentProgress: 0,
@@ -265,7 +268,7 @@ public struct LearningJourneyBarView: View {
                 onBarClicked: { index in
                     print("Clicked \(index)")
                 })
-            .frame(width: 200)
+            .frame(width: 300)
             
             
         }
