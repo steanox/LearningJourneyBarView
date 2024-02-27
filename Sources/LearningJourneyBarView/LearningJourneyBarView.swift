@@ -160,7 +160,7 @@ public struct LearningJourneyBarView: View {
                                 topTrailingRadius: barHeight / 3
                             )
                         )
-                        .opacity(isMidBarHover ? 0.8 : 1)
+                        .opacity(isMidBarHover ? 0.3 : 1)
                         .overlay(alignment: .leading, content: {
                             Rectangle()
                                 .frame(
