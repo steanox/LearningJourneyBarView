@@ -22,6 +22,9 @@ public struct LearningJourneyBarView: View {
     @State private var selectedIndex: Int? = nil
     @State private var isBarClickable = false
     
+    @State private var isBackBarShown = true
+    @State private var isMidBarHover = false
+    
     //For View
     @State var rowSize: CGFloat = 0
     @State var overlapBar: CGFloat = 0
@@ -125,16 +128,16 @@ public struct LearningJourneyBarView: View {
                             .frame(
                                 width: plusBarWidth ,
                                 height: barHeight)
-                            
                             .clipShape(
                                 .rect(
                                     topLeadingRadius: 0,
                                     bottomLeadingRadius: 0,
-                                    bottomTrailingRadius: barHeight / 2,
-                                    topTrailingRadius: barHeight / 2
+                                    bottomTrailingRadius: barHeight / 3,
+                                    topTrailingRadius: barHeight / 3
                                 )
                             )
                             .offset(y: height / 2 - (barHeight / 2))
+                            .opacity(isBackBarShown ? 1 : 0)
                     }
                     
                     //draw the bar
@@ -153,10 +156,11 @@ public struct LearningJourneyBarView: View {
                             .rect(
                                 topLeadingRadius: 0,
                                 bottomLeadingRadius: 0,
-                                bottomTrailingRadius: barHeight / 2,
-                                topTrailingRadius: barHeight / 2
+                                bottomTrailingRadius: barHeight / 3,
+                                topTrailingRadius: barHeight / 3
                             )
                         )
+                        .opacity(isMidBarHover ? 0.8 : 1)
                         .overlay(alignment: .leading, content: {
                             Rectangle()
                                 .frame(
@@ -168,21 +172,36 @@ public struct LearningJourneyBarView: View {
                                     .rect(
                                         topLeadingRadius: 0,
                                         bottomLeadingRadius: 0,
-                                        bottomTrailingRadius: barHeight / 2,
-                                        topTrailingRadius: barHeight / 2
+                                        bottomTrailingRadius: barHeight / 3,
+                                        topTrailingRadius: barHeight / 3
                                     )
                                 )
                                 
                                 
                         })
                         .offset(y: height / 2 - (barHeight / 2))
+                        
+                    
+                    Path {path in
+                        path.move(to:
+                                    CGPointMake(0,0))
+                        path.addLine(to:
+                                        CGPointMake(
+                                            backgroundLineWidth,
+                                            0))
+                        path.addLine(to:
+                                        CGPointMake(backgroundLineWidth,height))
+                        path.addLine(to:
+                                        CGPointMake(0,height))
+                    }
+                    .fill(backgroundLineColor)
                 }
                 .onContinuousHover(coordinateSpace: .local) { phase in
                     switch phase{
                     case .active(let point):
                         guard rowSize != 0 else { return }
                         let currentXIndex = 
-                        (point.x <= backgroundLineWidth) ? 0 : Int(point.x / (rowSize) + 1 )
+                        (point.x <= backgroundLineWidth) ? 0 : Int((point.x - backgroundLineWidth / 2) / (rowSize) + 1 )
                         
                         
                         let topBarPosition = height / 2 - (barHeight / 2)
@@ -191,7 +210,9 @@ public struct LearningJourneyBarView: View {
                         midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                         minBarWidth = 0
                         plusBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
-                        self.isBarClickable = false
+                        isBarClickable = false
+                        isMidBarHover = false
+                        isBackBarShown = true
                         
                         guard (
                             point.y > topBarPosition &&
@@ -207,11 +228,14 @@ public struct LearningJourneyBarView: View {
                             midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                             minBarWidth = CGFloat(currentXIndex) * rowSize + overlapBar
                             plusBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
+                            isMidBarHover = true
+                            isBackBarShown = false
                         }else
                         if currentXIndex > currentProgress{
                             midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                             minBarWidth = 0
                             plusBarWidth = CGFloat(currentXIndex) * rowSize + overlapBar
+                            
                         }else{
                             midBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                             minBarWidth = 0
