@@ -107,10 +107,10 @@ public struct LearningJourneyBarView: View {
                         path.move(to:CGPointMake(rowSize * CGFloat(targetObjectiveAt),0))
                         path.addLine(to:
                                         CGPointMake(
-                                            rowSize * CGFloat(targetObjectiveAt) + backgroundLineWidth,
+                                            rowSize * CGFloat(targetObjectiveAt) + backgroundLineWidth * 1.3,
                             0))
                         path.addLine(to:
-                                        CGPointMake(rowSize * CGFloat(targetObjectiveAt) + backgroundLineWidth,height))
+                                        CGPointMake(rowSize * CGFloat(targetObjectiveAt) + backgroundLineWidth * 1.3,height))
                         path.addLine(to:
                                     CGPointMake(rowSize * CGFloat(targetObjectiveAt),height))
                     }
