@@ -247,6 +247,8 @@ public struct LearningJourneyBarView: View {
                         minBarWidth = 0
                         plusBarWidth = CGFloat(currentProgress) * rowSize + overlapBar
                         self.isBarClickable = false
+                        isMidBarHover = false
+                        isBackBarShown = true
                     }
                 }
                 .onTapGesture {
@@ -280,7 +282,7 @@ public struct LearningJourneyBarView: View {
             .frame(width: 500)
             LearningJourneyBarView(
                 totalColumn: 4,
-                currentProgress: 0,
+                currentProgress: 2,
                 targetObjectiveAt: 2,
                 backgroundLineColor: .blue,
                 backgroundMiddleLineColor: .red,
