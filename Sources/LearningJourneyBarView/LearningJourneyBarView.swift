@@ -201,7 +201,7 @@ public struct LearningJourneyBarView: View {
                     case .active(let point):
                         guard rowSize != 0 else { return }
                         let currentXIndex = 
-                        (point.x <= backgroundLineWidth) ? 0 : Int((point.x - backgroundLineWidth / 2) / (rowSize) + 1 )
+                        (point.x <= backgroundLineWidth + (rowSize / 6)) ? 0 : Int((point.x - backgroundLineWidth / 2) / (rowSize) + 1 )
                         
                         
                         let topBarPosition = height / 2 - (barHeight / 2)
